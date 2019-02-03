@@ -60,12 +60,12 @@ Create scenario-specific .pbix files to deliver analytical views:
 
 For more information about how to create analytical reports, see [Getting started with Power BI Desktop](https://powerbi.microsoft.com/en-us/documentation/powerbi-desktop-getting-started/). This page is a great source for insights that can help you create compelling analytical reporting solutions.
 
-## Help secure analytical views that are provided through embedded Power BI reports
+## Secure analytical views that are provided through embedded Power BI reports
 Power BI report filters and the **Filter** pane serve as a mechanism for passing session context into the report that is embedded on the **Analytics** tab. The capability to turn the visibility of the **Filter** pane on and off isn't a security feature. Power BI report filters and the capability to hide and show the **Filter** pane are user experience (UX) decisions that the application designer makes.
 
 Row-level security that is defined in Finance and Operations isn't inherited by Power BI reports. Instead, application developers can help secure the workspace or the report.
 
-### Help secure analytical workspaces on the Analytics tab
+### Secure analytical workspaces on the Analytics tab
 Analytical workspaces are embedded Power BI reports that are shown in a form control. Unless you complete the following procedure, anyone who has access to the workspace can see the **Analytics** tab and access the Power BI reports.
 
 1. Add a menu item for the analytical workspace.
@@ -92,7 +92,7 @@ Embedded Power BI reports in the application are secured by using menu items. Us
 
 The menu item is now associated with the availability of the Power BI Embedded service. If the service is unavailable, the links for the menu items will be removed from the application.
 
-## Help secure analytical workspaces and reports by company
+## Secure analytical workspaces and reports by company
 Power BI workspaces and reports can be secured by company (for example, **DataAreaID** value). Application solutions must apply the following steps for company-level security in analytical workspaces and reports.
 
 In this scenario, the workspaces and reports that the sales manager from Contoso USA sees are limited to data that is related to Contoso USA. The report viewer must not have access to data that associated with any other company, unless the company context is changed.
@@ -111,3 +111,23 @@ In this scenario, the workspaces and reports that the sales manager from Contoso
     3. Select the **CompanyFilter** check box.
 
 The reports will now show data as if you're running the USMF company.
+
+## Use extensions to override security token string  
+Power BI workspaces and reports are secured by company by default. Application extensions can be used for cases where it is appropriate to filter on user context other than active company. For instance, when delivering analytical solutiosn that secure data based on security groups and user level filtering.
+
+**Step 1)  Define Role in PowerBI Report**
+Apply filters to the tables that need to be locked down based on the user context using the **username()** function. The username method returns the context string value passed to PowerBI service during the session initialization.  Ensure data that needs to be secured either associates back to this value directly, or indirectly through a table join.
+
+**Step 2)  Use extensions to pass in user context at runtime**
+Before calling **PBIReportHelper::initializeCustomReportControl** to construct the report control, construct the PBIReportCustomParameters object with the correct user context.  Add a role to securityRoleList based on the roles you have defined.  Then set the securityTokenUserName based on a value that uniquely identifies the user.
+
+Sample code:
+
+        PBIReportRunParameters reportRunParams = new PBIReportRunParameters();        
+        reportRunParams.parmResourceName(_resourceName);
+ 
+        // establish default settings for report
+        reportRunParams.parmSecurityTokenUserName(CurrentUserAPI());            // identifies the filter value
+        reportRunParams.parmSecurityRoleList(SecurityRoleList[]);               // identifies the security Role(s)
+    
+Data for the reports will now be filtered based on the user context supplied in the application extension.
