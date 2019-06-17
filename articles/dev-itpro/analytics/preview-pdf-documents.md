@@ -57,9 +57,10 @@ The hosted PDF document viewer control is automatically available in most deploy
 
 ## Additional feature information
 
-- Expandable/collapsible sections are available by default. These interactive operations do not function after the PDF document has been created.
+- Expandable/collapsible sections are only supported when viewing HTML documents. These interactive operations do not function once the report has been rendered as a PDF document.
+- Sub-reports are not supported by the PDF Preview experience.  
 - The printer drop-down menu allows users to choose from locally connected devices. This list does not include network printers connected through the Finance and Operations service.
-- Documents are downloaded to the local device using the built-in toolbar actions.
+- PDF documents are downloaded to the local device using the built-in toolbar actions.
 - Application extensions are available to activate embedded drill-thru links in PDF documents.
 - Use the **Print destination** options to produce documents in formats other than PDF.
 
